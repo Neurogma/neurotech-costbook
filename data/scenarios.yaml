@@ -1,0 +1,482 @@
+model_date: 2026-10-07
+currency_policy: USD-only for scenario totals; Muse remains EUR and is outside USD
+  totals.
+loaded_rate_model:
+  low_factor: 1.3
+  base_factor: 1.4287
+  high_factor: 1.55
+  source_anchor: A25
+scenarios:
+  garage:
+    title: Garage / dorm prototype
+    scope:
+      included:
+      - Ultracortex starting price
+      - Cyton 8-channel
+      - Analog Discovery 3
+      - basic EEG consumables
+      - engineering labor
+      excluded:
+      - computer
+      - rent
+      - formal QMS
+      - human study
+      - regulatory submission
+      conditional:
+      - shipping/tax/duties
+      - extra rework
+      assumed_existing:
+      - computer
+      - bench
+      - basic hand tools
+      not_modeled:
+      - insurance
+      - legal
+      - manufacturing transfer
+    envelope:
+      minimum:
+        cash_items:
+        - anchor: A01
+          qty: 1
+        - anchor: A02
+          qty: 1
+        - anchor: A05
+          qty: 1
+        - anchor: A08
+          qty: 1
+        labor:
+        - role: BME
+          hours: 40
+          anchor: A21
+        - role: EE
+          hours: 40
+          anchor: A22
+        - role: Software
+          hours: 40
+          anchor: A23
+      base:
+        cash_items:
+        - anchor: A01
+          qty: 1
+        - anchor: A02
+          qty: 1
+        - anchor: A05
+          qty: 1
+        - anchor: A06
+          qty: 1
+        - anchor: A08
+          qty: 1
+        labor:
+        - role: BME
+          hours: 60
+          anchor: A21
+        - role: EE
+          hours: 60
+          anchor: A22
+        - role: Software
+          hours: 80
+          anchor: A23
+      downside:
+        cash_items:
+        - anchor: A01
+          qty: 1
+        - anchor: A02
+          qty: 1
+        - anchor: A05
+          qty: 1
+        - anchor: A06
+          qty: 2
+        - anchor: A08
+          qty: 2
+        labor:
+        - role: BME
+          hours: 100
+          anchor: A21
+        - role: EE
+          hours: 100
+          anchor: A22
+        - role: Software
+          hours: 120
+          anchor: A23
+    gates:
+    - name: first useful signal
+      cash_before_gate: base_cash
+      labor_hours_before_gate: 200
+    sensitivities:
+    - driver: extra software iteration
+      change: +80 software hours
+      formula: 80 * software_loaded_rate
+    - driver: burden factor
+      change: 1.30 to 1.55
+      formula: all labor hours * raw wage * factor
+    - driver: hardware configuration
+      change: starting price to configured complete stack
+      formula: quote delta
+    replacements:
+      shipping: Request a configured vendor checkout or quote including freight, tax,
+        customs and brokerage from the vendor.
+    good_for: First prototype funding and time-versus-cash decision.
+    not_good_for: Clinical readiness or production budget.
+  university_eeg:
+    title: Serious university research EEG
+    scope:
+      included:
+      - 32-channel class research EEG buy path
+      - cap
+      - test instrument
+      - integration labor
+      - facility access path
+      excluded:
+      - clinical certification
+      - institution F&A
+      - major shielding construction
+      conditional:
+      - vendor configuration
+      - service contract
+      - facility setup fees
+      assumed_existing:
+      - computer
+      - university workspace
+      not_modeled:
+      - institution-specific F&A
+    buy:
+      cash_items:
+      - anchor: A14
+        qty: 1
+      - anchor: A04
+        qty: 1
+      - anchor: A05
+        qty: 1
+      labor:
+      - role: BME
+        hours: 80
+        anchor: A21
+      - role: EE
+        hours: 60
+        anchor: A22
+      - role: Software
+        hours: 100
+        anchor: A23
+      - role: PM
+        hours: 40
+        anchor: A24
+    access:
+      cash_items:
+      - anchor: A16
+        qty: 60
+      labor:
+      - role: Software
+        hours: 80
+        anchor: A23
+      - role: PM
+        hours: 40
+        anchor: A24
+      access_rate_anchor: A16
+    sensitivities:
+    - driver: access utilization
+      change: +60 facility hours
+      formula: 60 * A16
+    - driver: amplifier tier
+      change: Enobio proxy to actiCHamp/ActiveTwo proxy
+      formula: configured quote delta
+    - driver: labor
+      change: +100 hours
+      formula: role-specific loaded rates
+    replacements:
+      hardware: Request a current 32-channel configuration quote including amplifier,
+        cap/electrodes, acquisition/trigger, software, support, warranty, calibration
+        and lead time from the chosen vendor.
+      access: Request the current facility rate, minimum block, setup/training charges
+        and cancellation policy from the facility manager.
+    good_for: PI equipment and access decision.
+    not_good_for: Clinical EEG procurement or a full institutional grant budget.
+  tes_eeg:
+    title: University tES + EEG
+    scope:
+      included:
+      - StarStim-class tES proxy
+      - 16-channel EEG stack
+      - cap
+      - bench instrument
+      - integration labor
+      excluded:
+      - therapeutic use
+      - clinical stimulation
+      - specialized certification
+      conditional:
+      - current tES quote
+      - electrode package
+      - synchronization and safety validation scope
+      assumed_existing:
+      - computer
+      - university bench
+      not_modeled:
+      - institutional F&A
+    base:
+      cash_items:
+      - anchor: A15
+        qty: 1
+      - anchor: A03
+        qty: 1
+      - anchor: A04
+        qty: 1
+      - anchor: A05
+        qty: 1
+      labor:
+      - role: BME
+        hours: 120
+        anchor: A21
+      - role: EE
+        hours: 80
+        anchor: A22
+      - role: Software
+        hours: 100
+        anchor: A23
+    downside:
+      cash_items:
+      - anchor: A15
+        qty: 1
+      - anchor: A03
+        qty: 1
+      - anchor: A04
+        qty: 1
+      - anchor: A05
+        qty: 1
+      - anchor: A07
+        qty: 2
+      labor:
+      - role: BME
+        hours: 180
+        anchor: A21
+      - role: EE
+        hours: 120
+        anchor: A22
+      - role: Software
+        hours: 160
+        anchor: A23
+    sensitivities:
+    - driver: tES hardware
+      change: $5k proxy to $10k proxy
+      formula: +$5k cash
+    - driver: integration
+      change: +120 mixed-role hours
+      formula: role-specific loaded rates
+    - driver: hardware architecture
+      change: separate systems versus integrated vendor stack
+      formula: quote delta
+    replacements:
+      tes: Request an exact StarStim configuration quote with stimulation modes, electrode
+        set, software/license, synchronization, support, warranty and lead time from
+        Neuroelectrics.
+    good_for: Research-stack feasibility and engineering planning.
+    not_good_for: Therapeutic clinical budget.
+  pilot_20:
+    title: 20-completer human EEG pilot
+    scope:
+      included:
+      - 20 completed subjects
+      - 25 enrolled
+      - 1 session each
+      - 2 room-hours per completed subject
+      - participant compensation
+      - facility access
+      - IRB proxy
+      - consumables
+      - storage
+      - study labor
+      excluded:
+      - new EEG purchase
+      - sponsor F&A
+      - major CRO
+      conditional:
+      - insurance
+      - repeat review
+      - extra sessions
+      assumed_existing:
+      - EEG system
+      - compute workstation
+      - baseline study room
+      not_modeled:
+      - institutional software licenses already included in overhead
+    inputs:
+      completed_subjects: 20
+      enrolled_subjects: 25
+      screen_fail_or_dropout_buffer: 0.2
+      sessions_per_completed_subject: 1
+      room_hours_per_completed_subject: 2
+      recording_hours_per_subject: 1
+      channels: 32
+      sample_rate_hz: 500
+      bytes_per_sample: 3
+      storage_multiplier: 3
+      retention_months: 12
+    base:
+      cash_items:
+      - anchor: A16
+        qty: 40
+      - anchor: A18
+        qty: 20
+      - anchor: A17
+        qty: 1
+      - anchor: A06
+        qty: 1
+      - anchor: A08
+        qty: 2
+      labor:
+      - role: PM
+        hours: 120
+        anchor: A24
+      - role: Software
+        hours: 60
+        anchor: A23
+      storage_anchor: A19
+    conditional_items:
+    - anchor: A30
+      qty: 1
+    - anchor: A35
+      qty: 25
+    clinical_insurance_anchor: A30
+    clinical_compensation_note: A18
+    sensitivities:
+    - driver: completed subjects
+      change: +10 completers
+      formula: 10 * (2*A16 + A18)
+    - driver: room setup time
+      change: +0.5 room-hours per subject
+      formula: 20 * 0.5 * A16
+    - driver: institution
+      change: replace Stanford IRB proxy
+      formula: actual fee - 3500
+    replacements:
+      irb: Request the institution-specific IRB fee schedule for the sponsor and study
+        category from the IRB office.
+      facility: Request current EEG rate, setup time, booking minimum and cancellation
+        charges from the facility.
+      insurance: Request protocol-specific research or clinical liability/trial insurance
+        quotes from 2 to 3 specialist brokers.
+      recruitment: If external online recruitment is appropriate, generate a current
+        Prolific quote using the exact audience and duration; otherwise request an
+        institution-specific recruitment pool or vendor quote.
+    good_for: Early human-data grant and staffing envelope.
+    not_good_for: Multi-site clinical trial budget.
+  510k:
+    title: U.S. 510(k) neurodiagnostic pathway after product development
+    scope:
+      included:
+      - FDA user fee
+      - historical regulatory preparation proxy
+      - historical QMS bundle proxy
+      - historical testing proxy
+      - internal regulatory and engineering labor
+      excluded:
+      - original product R&D
+      - manufacturing scale-up
+      - clinical study in base case
+      - company overhead
+      conditional:
+      - clinical evidence
+      - additional testing
+      - retesting
+      - establishment registration depending on role and timing
+      assumed_existing:
+      - working product
+      - baseline design inputs
+      - plausible predicate candidate
+      not_modeled:
+      - postmarket program
+      - commercial launch
+    small_business:
+      fee_anchor: A32
+      cash_items:
+      - anchor: A32
+        qty: 1
+      - anchor: A26
+        qty: 1
+      - anchor: A27
+        qty: 1
+      - anchor: A28
+        qty: 1
+      labor:
+      - role: BME
+        hours: 250
+        anchor: A21
+      - role: EE
+        hours: 150
+        anchor: A22
+      - role: Software
+        hours: 150
+        anchor: A23
+      - role: PM
+        hours: 100
+        anchor: A24
+    standard_fee:
+      fee_anchor: A33
+      cash_items:
+      - anchor: A33
+        qty: 1
+      - anchor: A26
+        qty: 1
+      - anchor: A27
+        qty: 1
+      - anchor: A28
+        qty: 1
+      labor:
+      - role: BME
+        hours: 250
+        anchor: A21
+      - role: EE
+        hours: 150
+        anchor: A22
+      - role: Software
+        hours: 150
+        anchor: A23
+      - role: PM
+        hours: 100
+        anchor: A24
+    conditional_items:
+    - anchor: A29
+      qty: 1
+    sensitivities:
+    - driver: testing scope
+      change: $100k proxy to $200k planning branch
+      formula: +$100k cash
+    - driver: QMS scope
+      change: replace $260k proxy with actual SOW
+      formula: quote delta
+    - driver: clinical branch
+      change: activate $500k to $1.5M branch
+      formula: add conditional cash
+    replacements:
+      testing: Request a device-specific V&V SOW from 2 qualified labs covering electrical
+        safety, EMC, software, performance, biocompatibility/sterility, usability
+        and cybersecurity only as applicable.
+      qms: Request a QMS gap assessment and implementation SOW under QMSR/ISO 13485
+        from a medical-device quality consultant.
+      regulatory: Request fixed-fee predicate analysis, intended-use review, equivalence
+        strategy, submission assembly and one response round from a 510k consultant.
+    good_for: Regulatory financing envelope after product and predicate strategy exist.
+    not_good_for: Universal 510k pricing or a launch budget.
+  implantable_boundary:
+    title: Implantable or complex-device economic boundary
+    scope:
+      included:
+      - Published complex-device benchmark as context
+      excluded:
+      - Treating benchmark as a neurotech quote
+      conditional:
+      - sterility
+      - biocompatibility
+      - clinical evidence
+      - manufacturing validation
+      - QMS
+      - supply chain
+      assumed_existing: []
+      not_modeled:
+      - device-specific detailed development plan
+    reference_anchor: A31
+    good_for: Showing how quickly economics diverge from non-invasive neurotech.
+    not_good_for: Budgeting an implantable program from this single benchmark.
+notes:
+  university_f_and_a: Exclude institutional F&A from direct scientific totals unless
+    institution and sponsor rules are supplied.
+  quote_policy: Every proxy has a replacement request and next action in COSTBOOK.md.
